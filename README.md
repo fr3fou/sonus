@@ -10,3 +10,4 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
   - [ ] Add up the "conflicting" (the ones that match) samples when copying the new note into the buffer
         - Would have to change from using the `copy` function to a manual process
 - [ ] Configurable sample rate / adsr / generators
+- [ ] Better piano keys
