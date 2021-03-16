@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"math"
+	"time"
 
+	"github.com/fr3fou/gusic/gusic"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
-	maxSamples          = 22050
+	maxSamples          = 48000 * 5
 	maxSamplesPerUpdate = 4096
 )
 
@@ -28,8 +30,19 @@ func main() {
 	// for that reason, there is a clip everytime audio stream is looped
 	rl.PlayAudioStream(stream)
 
-	totalSamples := int32(maxSamples)
+	totalSamples := int32(0)
 	samplesLeft := int32(totalSamples)
+
+	bpm := 120
+	noteLength := 4
+
+	breve := time.Minute / gusic.NoteDuration(bpm) * gusic.NoteDuration(noteLength) * 2
+	semibreve := breve / 2
+	// minim := semibreve / 2
+	crotchet := semibreve / 4
+	// quaver := semibreve / 8
+	// semiquaver := semibreve / 16
+	// demisemiquaver := semibreve / 32
 
 	rl.SetTargetFPS(60)
 
@@ -48,10 +61,10 @@ func main() {
 
 			samplesLeft -= numSamples
 
-			// Reset samples feeding (loop audio)
-			if samplesLeft <= 0 {
-				samplesLeft = totalSamples
-			}
+			// // Reset samples feeding (loop audio)
+			// if samplesLeft <= 0 {
+			// 	samplesLeft = totalSamples
+			// }
 		}
 
 		rl.BeginDrawing()
@@ -59,7 +72,19 @@ func main() {
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			coords := rl.GetMousePosition()
 			if coords.X >= 100 && coords.Y >= 100 && coords.X <= 600+100 && coords.Y <= 600+100 {
-				fmt.Println("clicked")
+				note := gusic.D(4, crotchet, 0.125)
+				samples := samplesToFloat32(
+					note.Samples(
+						48000,
+						math.Sin,
+						gusic.NewLinearADSR(
+							gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
+						),
+					),
+				)
+				copy(data, samples)
+				totalSamples = int32(len(samples))
+				samplesLeft = totalSamples
 			}
 		}
 		rl.DrawRectangle(100, 100, 600, 600, color)
@@ -67,4 +92,12 @@ func main() {
 	}
 
 	rl.CloseWindow()
+}
+
+func samplesToFloat32(in []float64) []float32 {
+	samples := make([]float32, len(in))
+	for i, v := range in {
+		samples[i] = float32(v)
+	}
+	return samples
 }
