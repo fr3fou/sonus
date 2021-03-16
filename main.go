@@ -132,10 +132,19 @@ func main() {
 			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), 1, height-int32(topMargin), rl.Gray)
 		}
 
+		counter := 0
+		gapCount := 0
 		for i := range blackKeys {
-			x := (int32(whiteWidth - blackWidth/2)) + int32((i)*whiteWidth)
+			if counter == 2 || counter == 5 {
+				gapCount++
+			}
+			if counter == 5 {
+				counter = 0
+			}
+			x := (int32(whiteWidth - blackWidth/2)) + int32((i)*whiteWidth) + int32(gapCount*whiteWidth)
 			y := int32(topMargin)
 			rl.DrawRectangle(x, y, int32(blackWidth), int32(0.6*float32(height-int32(topMargin))), rl.Black)
+			counter++
 		}
 		rl.EndDrawing()
 	}
