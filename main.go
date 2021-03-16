@@ -36,7 +36,7 @@ func (p *Key) Samples() []float32 {
 }
 
 func main() {
-	rl.InitWindow(800, 800, "goda - a simple music pad")
+	rl.InitWindow(1650, 900, "goda - a simple music pad")
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice() // Close audio device (music streaming is automatically stopped)
@@ -89,9 +89,18 @@ func main() {
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			coords := rl.GetMousePosition()
 			if coords.X >= 100 && coords.Y >= 100 && coords.X <= 600+100 && coords.Y <= 600+100 {
-				// note := gusic.D(4, quaver, 0.125)
-				samples :=
-					copy(data, samples)
+				note := gusic.D(4, quaver, 0.125)
+				samples := samplesToFloat32(
+					note.Samples(
+						// TODO, configurable params
+						48000,
+						math.Sin,
+						gusic.NewLinearADSR(
+							gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
+						),
+					),
+				)
+				copy(data, samples)
 				totalSamples = int32(len(samples))
 				samplesLeft = totalSamples
 			}
