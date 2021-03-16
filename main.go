@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/fr3fou/gusic/gusic"
@@ -33,7 +34,7 @@ func (p *Key) Samples() []float32 {
 func main() {
 	width := int32(1680)
 	height := int32(900)
-	rl.InitWindow(width, height, "goda - a simple music pad")
+	rl.InitWindow(width, height, "goda - a simple music synth")
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
@@ -66,6 +67,7 @@ func main() {
 
 	keys := []Key{}
 	whiteKeys := []Key{}
+	blackKeys := []Key{}
 	startOctave := 3
 	lastOctave := 5
 	octaveCount := lastOctave - startOctave + 1 // +1 because it's inclusive
@@ -97,6 +99,8 @@ func main() {
 	for _, key := range keys {
 		if !key.IsSemitone {
 			whiteKeys = append(whiteKeys, key)
+		} else {
+			blackKeys = append(blackKeys, key)
 		}
 	}
 
@@ -125,15 +129,14 @@ func main() {
 
 		for i := range whiteKeys {
 			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), int32(whiteWidth), height-int32(topMargin), rl.White)
-			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), 2, height-int32(topMargin), rl.Gray)
+			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), 1, height-int32(topMargin), rl.Gray)
 		}
 
-		for i, key := range keys {
-			if key.IsSemitone {
-				rl.DrawRectangle(int32(i*blackWidth), int32(topMargin), int32(blackWidth), int32(0.6*float32(height-int32(topMargin))), rl.Black)
-			}
+		for i := range blackKeys {
+			x := (int32(whiteWidth - blackWidth/2)) + int32((i)*whiteWidth)
+			y := int32(topMargin)
+			rl.DrawRectangle(x, y, int32(blackWidth), int32(0.6*float32(height-int32(topMargin))), rl.Black)
 		}
-
 		rl.EndDrawing()
 	}
 
@@ -146,4 +149,23 @@ func samplesToFloat32(in []float64) []float32 {
 		samples[i] = float32(v)
 	}
 	return samples
+}
+
+const twelfthrootof2 float64 = 1.059463094359
+
+var (
+	a4 = 440
+	// https://github.com/fr3fou/gusic/blob/72a7e32d5644ed6d123e365d416fdca51a268161/gusic/step.go#L38
+	// c0    = float64(a4) * math.Pow(twelfthrootof2, float64(-4*12-9))
+	c0    = float64(a4) * math.Pow(2, -4.75)
+	notes = []string{
+		"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+	}
+)
+
+func note(freq float64) string {
+	h := int(math.Round(12 * math.Log2(freq/c0)))
+	octave := h / 12
+
+	return notes[h%12] + strconv.Itoa(octave)
 }
