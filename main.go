@@ -163,8 +163,10 @@ func main() {
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
-		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 			pos := rl.GetMousePosition()
+
+			hasFound := false
 
 			for _, key := range blackKeys {
 				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
@@ -172,20 +174,24 @@ func main() {
 					copy(data, samples)
 					totalSamples = int32(len(samples))
 					samplesLeft = totalSamples
+					hasFound = true
 					break
 				}
 
 			}
 
-			for _, key := range whiteKeys {
-				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
-					samples := key.Samples()
-					copy(data, samples)
-					totalSamples = int32(len(samples))
-					samplesLeft = totalSamples
-					break
+			if !hasFound {
+				for _, key := range whiteKeys {
+					if rl.CheckCollisionPointRec(pos, key.Rectangle) {
+						samples := key.Samples()
+						copy(data, samples)
+						totalSamples = int32(len(samples))
+						samplesLeft = totalSamples
+						break
+					}
 				}
 			}
+
 		}
 
 		for i, key := range whiteKeys {
