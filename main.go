@@ -72,11 +72,10 @@ func main() {
 	lastOctave := 5
 	octaveCount := lastOctave - startOctave + 1 // +1 because it's inclusive
 
-	// whiteWidth := 70
 	whiteWidth := int(width / (int32(octaveCount) * 7)) // 7 is white keys per octave
-	blackWidth := int(0.6 * float64(whiteWidth))
+	blackWidth := int(0.75 * float64(whiteWidth))
 
-	topMargin := 200
+	topMargin := 350
 
 	for i := startOctave; i <= lastOctave; i++ {
 		// TODO: set duration to 0 and update it based on hold duration
@@ -122,7 +121,7 @@ func main() {
 		}
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.Yellow)
+		rl.ClearBackground(rl.Black)
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			// coords := rl.GetMousePosition()
 		}
@@ -146,6 +145,8 @@ func main() {
 			rl.DrawRectangle(x, y, int32(blackWidth), int32(0.6*float32(height-int32(topMargin))), rl.Black)
 			counter++
 		}
+		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
+		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, float32(width), float32(height)), 5, rl.Black)
 		rl.EndDrawing()
 	}
 
