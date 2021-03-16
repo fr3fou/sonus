@@ -12,3 +12,5 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
 - [ ] Configurable sample rate / adsr / generators
 - [ ] Better piano keys
 - [ ] MIDI Input
+- [ ] Octave labels 
+- [ ] Octave changer
