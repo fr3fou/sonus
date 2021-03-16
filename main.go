@@ -13,6 +13,7 @@ type Key struct {
 	rl.Rectangle
 	gusic.Note
 	IsSemitone bool
+	IsActive   bool
 }
 
 func NewKey(note gusic.Note, isSemitone bool) Key {
@@ -24,7 +25,7 @@ func (k *Key) Samples() []float32 {
 		k.Note.Samples(
 			// TODO, configurable params
 			48000,
-			math.Sin,
+			gusic.Sawtooth(math.Pi),
 			gusic.NewLinearADSR(
 				gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
 			),
@@ -38,6 +39,9 @@ func (k *Key) Draw() {
 		color = rl.Black
 	}
 	rl.DrawRectangleRec(k.Rectangle, color)
+	if k.IsActive {
+		rl.DrawRectangleRec(k.Rectangle, rl.NewColor(204, 67, 67, 128))
+	}
 }
 
 func main() {
@@ -74,7 +78,7 @@ func main() {
 
 	volume := 0.125
 
-	keys := []Key{}
+	_keys := []Key{}
 	whiteKeys := []Key{}
 	blackKeys := []Key{}
 	startOctave := 3
@@ -88,7 +92,7 @@ func main() {
 
 	for i := startOctave; i <= lastOctave; i++ {
 		// TODO: set duration to 0 and update it based on hold duration
-		keys = append(keys,
+		_keys = append(_keys,
 			NewKey(gusic.C(i, quaver, volume), false),
 			NewKey(gusic.CS(i, quaver, volume), true),
 			NewKey(gusic.D(i, quaver, volume), false),
@@ -104,14 +108,12 @@ func main() {
 		)
 	}
 
-	for _, key := range keys {
-
+	for _, key := range _keys {
 		if !key.IsSemitone {
 			whiteKeys = append(whiteKeys, key)
 		} else {
 			blackKeys = append(blackKeys, key)
 		}
-
 	}
 
 	for i := range whiteKeys {
@@ -130,6 +132,7 @@ func main() {
 		if counter == 2 || counter == 5 {
 			gapCount++
 		}
+
 		if counter == 5 {
 			counter = 0
 		}
@@ -161,37 +164,46 @@ func main() {
 			samplesLeft -= numSamples
 		}
 
+		pos := rl.GetMousePosition()
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
-		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-			pos := rl.GetMousePosition()
 
+		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 			hasFound := false
 
-			for _, key := range blackKeys {
+			for i, key := range blackKeys {
 				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
 					samples := key.Samples()
 					copy(data, samples)
 					totalSamples = int32(len(samples))
 					samplesLeft = totalSamples
 					hasFound = true
-					break
+					blackKeys[i].IsActive = true
+					continue
 				}
-
+				blackKeys[i].IsActive = false
 			}
 
-			if !hasFound {
-				for _, key := range whiteKeys {
-					if rl.CheckCollisionPointRec(pos, key.Rectangle) {
-						samples := key.Samples()
-						copy(data, samples)
-						totalSamples = int32(len(samples))
-						samplesLeft = totalSamples
-						break
-					}
+			for i, key := range whiteKeys {
+				if !hasFound && rl.CheckCollisionPointRec(pos, key.Rectangle) {
+					samples := key.Samples()
+					copy(data, samples)
+					totalSamples = int32(len(samples))
+					samplesLeft = totalSamples
+					whiteKeys[i].IsActive = true
+					continue
 				}
+				whiteKeys[i].IsActive = false
+			}
+		} else {
+			for i := range whiteKeys {
+				whiteKeys[i].IsActive = false
 			}
 
+			for i := range blackKeys {
+				blackKeys[i].IsActive = false
+			}
 		}
 
 		for i, key := range whiteKeys {
