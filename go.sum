@@ -1,3 +1,4 @@
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fr3fou/gusic v0.0.0-20201017164734-72a7e32d5644 h1:TaVfpjvD37rXPuiPKMpeDX3F1/GmwazcplYKiKFCftE=
 github.com/fr3fou/gusic v0.0.0-20201017164734-72a7e32d5644/go.mod h1:Q01QY/5NdB77bHp4MTJ6mfLhI9QOjeudjz31mUbJxVg=
