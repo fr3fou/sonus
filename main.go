@@ -10,6 +10,7 @@ import (
 )
 
 type Key struct {
+	rl.Rectangle
 	gusic.Note
 	IsSemitone bool
 }
@@ -145,6 +146,7 @@ func main() {
 			rl.DrawRectangle(x, y, int32(blackWidth), int32(0.6*float32(height-int32(topMargin))), rl.Black)
 			counter++
 		}
+
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
 		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, float32(width), float32(height)), 5, rl.Black)
 		rl.EndDrawing()

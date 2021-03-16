@@ -11,3 +11,4 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
         - Would have to change from using the `copy` function to a manual process
 - [ ] Configurable sample rate / adsr / generators
 - [ ] Better piano keys
+- [ ] MIDI Input
