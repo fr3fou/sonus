@@ -33,14 +33,14 @@ func main() {
 	totalSamples := int32(0)
 	samplesLeft := int32(totalSamples)
 
-	bpm := 120
+	bpm := 200
 	noteLength := 4
 
 	breve := time.Minute / gusic.NoteDuration(bpm) * gusic.NoteDuration(noteLength) * 2
 	semibreve := breve / 2
 	// minim := semibreve / 2
-	crotchet := semibreve / 4
-	// quaver := semibreve / 8
+	// crotchet := semibreve / 4
+	quaver := semibreve / 8
 	// semiquaver := semibreve / 16
 	// demisemiquaver := semibreve / 32
 
@@ -72,7 +72,7 @@ func main() {
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			coords := rl.GetMousePosition()
 			if coords.X >= 100 && coords.Y >= 100 && coords.X <= 600+100 && coords.Y <= 600+100 {
-				note := gusic.D(4, crotchet, 0.125)
+				note := gusic.D(4, quaver, 0.125)
 				samples := samplesToFloat32(
 					note.Samples(
 						48000,
