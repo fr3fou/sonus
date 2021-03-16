@@ -51,15 +51,15 @@ func main() {
 	stream := rl.InitAudioStream(48000, 32, 1)
 	defer rl.CloseAudioStream(stream)
 
-	// maxSamples := 48000 * 5
-	// maxSamplesPerUpdate := 4096
+	maxSamples := 48000 * 5
+	maxSamplesPerUpdate := int32(4096)
 
-	// data := make([]float32, maxSamples)
+	data := make([]float32, maxSamples)
 
 	rl.PlayAudioStream(stream)
 
-	// totalSamples := int32(0)
-	// samplesLeft := int32(totalSamples)
+	totalSamples := int32(0)
+	samplesLeft := int32(totalSamples)
 
 	bpm := 200
 	noteLength := 4
@@ -105,21 +105,25 @@ func main() {
 	}
 
 	for _, key := range keys {
+
 		if !key.IsSemitone {
 			whiteKeys = append(whiteKeys, key)
 		} else {
 			blackKeys = append(blackKeys, key)
 		}
+
 	}
 
 	for i := range whiteKeys {
-		whiteKeys[i].Rectangle = rl.NewRectangle(
+		rect := rl.NewRectangle(
 			float32(i*whiteWidth),
 			float32(topMargin),
 			float32(whiteWidth),
 			float32(height-int32(topMargin)),
 		)
+		whiteKeys[i].Rectangle = rect
 	}
+
 	counter := 0
 	gapCount := 0
 	for i := range blackKeys {
@@ -129,39 +133,59 @@ func main() {
 		if counter == 5 {
 			counter = 0
 		}
-		x := whiteWidth - blackWidth/2 + i*whiteWidth + gapCount*whiteWidth
-		y := topMargin
 
-		blackKeys[i].Rectangle = rl.NewRectangle(
-			float32(x),
-			float32(y),
+		rect := rl.NewRectangle(
+			float32(whiteWidth-blackWidth/2+i*whiteWidth+gapCount*whiteWidth),
+			float32(topMargin),
 			float32(blackWidth),
 			float32(height-int32(topMargin))*0.6,
 		)
+
+		blackKeys[i].Rectangle = rect
 		counter++
 	}
 
 	rl.SetTargetFPS(60)
 
 	for !rl.WindowShouldClose() {
-		// Refill audio stream if required
 		if rl.IsAudioStreamProcessed(stream) {
-			// numSamples := int32(0)
-			// if samplesLeft >= maxSamplesPerUpdate {
-			// 	numSamples = maxSamplesPerUpdate
-			// } else {
-			// 	numSamples = samplesLeft
-			// }
+			numSamples := int32(0)
+			if samplesLeft >= maxSamplesPerUpdate {
+				numSamples = maxSamplesPerUpdate
+			} else {
+				numSamples = samplesLeft
+			}
 
-			// rl.UpdateAudioStream(stream, data[totalSamples-samplesLeft:], numSamples)
+			rl.UpdateAudioStream(stream, data[totalSamples-samplesLeft:], numSamples)
 
-			// samplesLeft -= numSamples
+			samplesLeft -= numSamples
 		}
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-			// coords := rl.GetMousePosition()
+			pos := rl.GetMousePosition()
+
+			for _, key := range blackKeys {
+				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
+					samples := key.Samples()
+					copy(data, samples)
+					totalSamples = int32(len(samples))
+					samplesLeft = totalSamples
+					break
+				}
+
+			}
+
+			for _, key := range whiteKeys {
+				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
+					samples := key.Samples()
+					copy(data, samples)
+					totalSamples = int32(len(samples))
+					samplesLeft = totalSamples
+					break
+				}
+			}
 		}
 
 		for i, key := range whiteKeys {
