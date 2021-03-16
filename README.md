@@ -3,7 +3,7 @@
 A simple synth music app using <https://github.com/fr3fou/gusic>
 
 - [ ] Note duration based on hold duration
-- [ ] Render multiple pads
+- [x] Render multiple keys
 - [ ] Support for pressing several keys at once / play more than 1 note at once
   - [ ] Remove / shift the samples from the buffer as they get played
         - Use a channel instead of an array buffer?
