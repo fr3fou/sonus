@@ -19,9 +19,9 @@ func NewKey(note gusic.Note, isSemitone bool) Key {
 	return Key{Note: note, IsSemitone: isSemitone}
 }
 
-func (p *Key) Samples() []float32 {
+func (k *Key) Samples() []float32 {
 	return samplesToFloat32(
-		p.Note.Samples(
+		k.Note.Samples(
 			// TODO, configurable params
 			48000,
 			math.Sin,
@@ -30,6 +30,14 @@ func (p *Key) Samples() []float32 {
 			),
 		),
 	)
+}
+
+func (k *Key) Draw() {
+	color := rl.White
+	if k.IsSemitone {
+		color = rl.Black
+	}
+	rl.DrawRectangleRec(k.Rectangle, color)
 }
 
 func main() {
@@ -104,6 +112,35 @@ func main() {
 		}
 	}
 
+	for i := range whiteKeys {
+		whiteKeys[i].Rectangle = rl.NewRectangle(
+			float32(i*whiteWidth),
+			float32(topMargin),
+			float32(whiteWidth),
+			float32(height-int32(topMargin)),
+		)
+	}
+	counter := 0
+	gapCount := 0
+	for i := range blackKeys {
+		if counter == 2 || counter == 5 {
+			gapCount++
+		}
+		if counter == 5 {
+			counter = 0
+		}
+		x := whiteWidth - blackWidth/2 + i*whiteWidth + gapCount*whiteWidth
+		y := topMargin
+
+		blackKeys[i].Rectangle = rl.NewRectangle(
+			float32(x),
+			float32(y),
+			float32(blackWidth),
+			float32(height-int32(topMargin))*0.6,
+		)
+		counter++
+	}
+
 	rl.SetTargetFPS(60)
 
 	for !rl.WindowShouldClose() {
@@ -127,28 +164,16 @@ func main() {
 			// coords := rl.GetMousePosition()
 		}
 
-		for i := range whiteKeys {
-			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), int32(whiteWidth), height-int32(topMargin), rl.White)
+		for i, key := range whiteKeys {
+			key.Draw()
 			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), 1, height-int32(topMargin), rl.Gray)
 		}
 
-		counter := 0
-		gapCount := 0
-		for i := range blackKeys {
-			if counter == 2 || counter == 5 {
-				gapCount++
-			}
-			if counter == 5 {
-				counter = 0
-			}
-			x := (int32(whiteWidth - blackWidth/2)) + int32((i)*whiteWidth) + int32(gapCount*whiteWidth)
-			y := int32(topMargin)
-			rl.DrawRectangle(x, y, int32(blackWidth), int32(0.6*float32(height-int32(topMargin))), rl.Black)
-			counter++
+		for _, key := range blackKeys {
+			key.Draw()
 		}
 
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
-		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, float32(width), float32(height)), 5, rl.Black)
 		rl.EndDrawing()
 	}
 
