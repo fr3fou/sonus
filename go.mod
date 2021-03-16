@@ -1,4 +1,4 @@
-module github.com/fr3fou/snag
+module github.com/fr3fou/goda
 
 go 1.15
 

@@ -1,4 +1,4 @@
-# snag
+# goda
 
 A simple synth music app using <https://github.com/fr3fou/gusic>
 

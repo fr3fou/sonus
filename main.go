@@ -36,7 +36,7 @@ func (p *Key) Samples() []float32 {
 }
 
 func main() {
-	rl.InitWindow(800, 800, "snag - a simple music pad")
+	rl.InitWindow(800, 800, "goda - a simple music pad")
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice() // Close audio device (music streaming is automatically stopped)
