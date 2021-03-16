@@ -1,4 +1,4 @@
-module github.com/fr3fou/gad
+module github.com/fr3fou/snag
 
 go 1.15
 

@@ -13,8 +13,30 @@ const (
 	maxSamplesPerUpdate = 4096
 )
 
+type Key struct {
+	Color rl.Color
+	Note  gusic.Note
+}
+
+func NewKey(rect rl.Rectangle, note gusic.Note) *Key {
+	return &Key{Note: note}
+}
+
+func (p *Key) Samples() []float32 {
+	return samplesToFloat32(
+		p.Note.Samples(
+			// TODO, configurable params
+			48000,
+			math.Sin,
+			gusic.NewLinearADSR(
+				gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
+			),
+		),
+	)
+}
+
 func main() {
-	rl.InitWindow(800, 800, "gad - a simple music pad")
+	rl.InitWindow(800, 800, "snag - a simple music pad")
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice() // Close audio device (music streaming is automatically stopped)
@@ -60,11 +82,6 @@ func main() {
 			rl.UpdateAudioStream(stream, data[totalSamples-samplesLeft:], numSamples)
 
 			samplesLeft -= numSamples
-
-			// // Reset samples feeding (loop audio)
-			// if samplesLeft <= 0 {
-			// 	samplesLeft = totalSamples
-			// }
 		}
 
 		rl.BeginDrawing()
@@ -72,17 +89,9 @@ func main() {
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			coords := rl.GetMousePosition()
 			if coords.X >= 100 && coords.Y >= 100 && coords.X <= 600+100 && coords.Y <= 600+100 {
-				note := gusic.D(4, quaver, 0.125)
-				samples := samplesToFloat32(
-					note.Samples(
-						48000,
-						math.Sin,
-						gusic.NewLinearADSR(
-							gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
-						),
-					),
-				)
-				copy(data, samples)
+				// note := gusic.D(4, quaver, 0.125)
+				samples :=
+					copy(data, samples)
 				totalSamples = int32(len(samples))
 				samplesLeft = totalSamples
 			}
