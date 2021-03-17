@@ -2,5 +2,9 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fr3fou/gusic v0.0.0-20201017164734-72a7e32d5644 h1:TaVfpjvD37rXPuiPKMpeDX3F1/GmwazcplYKiKFCftE=
 github.com/fr3fou/gusic v0.0.0-20201017164734-72a7e32d5644/go.mod h1:Q01QY/5NdB77bHp4MTJ6mfLhI9QOjeudjz31mUbJxVg=
+github.com/fr3fou/gusic v0.0.0-20210317173744-6bf7bbf1dc27 h1:1pwMN8EwbV52XNCLly9iQUs/JWi6CqLfxKoH8BrjQeY=
+github.com/fr3fou/gusic v0.0.0-20210317173744-6bf7bbf1dc27/go.mod h1:Q01QY/5NdB77bHp4MTJ6mfLhI9QOjeudjz31mUbJxVg=
+github.com/fr3fou/gusic v0.0.0-20210317174247-e8c8ac76145d h1:H2WjlN6a8IXHP7cmxxLA/fKAifSf/detMWaiRL1IlR8=
+github.com/fr3fou/gusic v0.0.0-20210317174247-e8c8ac76145d/go.mod h1:Q01QY/5NdB77bHp4MTJ6mfLhI9QOjeudjz31mUbJxVg=
 github.com/gen2brain/raylib-go v0.0.0-20210227124741-9d258bad6516 h1:vm9imS9/veDqkgl/MEDX35jywHzLwUrS/XDXsiKnpPI=
 github.com/gen2brain/raylib-go v0.0.0-20210227124741-9d258bad6516/go.mod h1:LUVRDQbnxUaOgzLzW5lMS+IcbqlXHIqIA9wq8wxzmcA=

@@ -103,9 +103,7 @@ func main() {
 	squareTexture := rl.LoadTexture("square.png")
 	triangleTexture := rl.LoadTexture("triangle.png")
 
-	adsr := gusic.NewLinearADSR(
-		gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
-	)
+	adsr := gusic.NewIdentityADSR()
 
 	raygui.LoadGuiStyle("zahnrad.style")
 
@@ -241,10 +239,7 @@ func main() {
 
 		// Rendering settings
 		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, whiteTexture)
-		adsr = gusic.NewLinearADSR(
-			adsrInput(adsr.Ratios()),
-			1.35, 0.35,
-		)
+		adsr = gusic.NewIdentityADSR()
 
 		// Rendering decorations
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
