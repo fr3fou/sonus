@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -103,8 +102,6 @@ func main() {
 	sawtoothTexture := rl.LoadTexture("sawtooth.png")
 	squareTexture := rl.LoadTexture("square.png")
 	triangleTexture := rl.LoadTexture("triangle.png")
-
-	fmt.Println(whiteTexture.Width, whiteTexture.Height)
 
 	adsr := gusic.NewLinearADSR(
 		gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
