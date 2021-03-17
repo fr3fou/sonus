@@ -9,22 +9,26 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+const (
+	topMargin = 350
+)
+
 type Key struct {
 	rl.Rectangle
 	Texture        rl.Texture2D
 	PressedTexture rl.Texture2D
-	gusic.Note
+	gusic.SingleNote
 	IsSemitone bool
 	IsActive   bool
 }
 
-func NewKey(note gusic.Note, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D) Key {
-	return Key{Note: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture}
+func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D) Key {
+	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture}
 }
 
 func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
 	return samplesToFloat32(
-		k.Note.Samples(
+		k.SingleNote.Samples(
 			// TODO, configurable params
 			48000,
 			generator,
@@ -73,7 +77,7 @@ func main() {
 	// semiquaver := semibreve / 16
 	// demisemiquaver := semibreve / 32
 
-	volume := 0.125
+	volume := float32(0.125)
 
 	_keys := []Key{}
 	whiteKeys := []Key{}
@@ -94,6 +98,8 @@ func main() {
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
+	adsr := gusic.NewIdentityADSR()
+
 	whiteTexture := rl.LoadTexture("white.png")
 	blackTexture := rl.LoadTexture("black.png")
 	whitePressedTexture := rl.LoadTexture("white_pressed.png")
@@ -103,27 +109,24 @@ func main() {
 	squareTexture := rl.LoadTexture("square.png")
 	triangleTexture := rl.LoadTexture("triangle.png")
 
-	adsr := gusic.NewIdentityADSR()
-
 	raygui.LoadGuiStyle("zahnrad.style")
-
-	topMargin := 350
 
 	for i := startOctave; i <= lastOctave; i++ {
 		// TODO: set duration to 0 and update it based on hold duration
+
 		_keys = append(_keys,
-			NewKey(gusic.C(i, quaver, volume), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.CS(i, quaver, volume), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.D(i, quaver, volume), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.DS(i, quaver, volume), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.E(i, quaver, volume), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.F(i, quaver, volume), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.FS(i, quaver, volume), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.G(i, quaver, volume), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.GS(i, quaver, volume), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.A(i, quaver, volume), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.AS(i, quaver, volume), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.B(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.C(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.CS(i, quaver, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.D(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.DS(i, quaver, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.E(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.F(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.FS(i, quaver, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.G(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.GS(i, quaver, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.A(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.AS(i, quaver, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.B(i, quaver, 0), false, whiteTexture, whitePressedTexture),
 		)
 	}
 
@@ -220,10 +223,12 @@ func main() {
 		} else {
 			for i := range whiteKeys {
 				whiteKeys[i].IsActive = false
+				whiteKeys[i].SingleNote.Volume = float64(volume)
 			}
 
 			for i := range blackKeys {
 				blackKeys[i].IsActive = false
+				blackKeys[i].SingleNote.Volume = float64(volume)
 			}
 		}
 
@@ -241,6 +246,7 @@ func main() {
 		// Rendering settings
 		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, iconScale)
 		adsr = gusic.NewIdentityADSR()
+		volume = volumeInput(volume)
 
 		// Rendering soundwave
 		for i := 0; i < 4*100+4*3; i++ {
@@ -275,8 +281,13 @@ func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture 
 	), 0, float32(iconScale), rl.Red)
 	return raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 50), generators, generatorIndex)
 }
+
 func adsrInput(ratios gusic.ADSRRatios) gusic.ADSRRatios {
 	return ratios
+}
+
+func volumeInput(volume float32) float32 {
+	return raygui.SliderBar(rl.NewRectangle(50, topMargin-75, 4*100+4*3, 25), volume, 0, 0.3)
 }
 
 func samplesToFloat32(in []float64) []float32 {
