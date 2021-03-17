@@ -100,6 +100,8 @@ func main() {
 		gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
 	)
 
+	raygui.LoadGuiStyle("zahnrad.style")
+
 	topMargin := 350
 
 	for i := startOctave; i <= lastOctave; i++ {
