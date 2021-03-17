@@ -89,9 +89,9 @@ func main() {
 
 	generatorMap := map[string]gusic.Generator{
 		"Sin":      math.Sin,
-		"Sawtooth": gusic.Sawtooth(math.Pi),
-		"Square":   gusic.Square(math.Pi),
-		"Triangle": gusic.Triangle(math.Pi),
+		"Sawtooth": gusic.Sawtooth(2 * math.Pi),
+		"Square":   gusic.Square(2 * math.Pi),
+		"Triangle": gusic.Triangle(2 * math.Pi),
 	}
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
