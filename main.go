@@ -96,6 +96,11 @@ func main() {
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
+	sinTexture := rl.LoadTexture("sin.png")
+	sawtoothTexture := rl.LoadTexture("sawtooth.png")
+	squareTexture := rl.LoadTexture("square.png")
+	triangleTexture := rl.LoadTexture("triangle.png")
+
 	adsr := gusic.NewLinearADSR(
 		gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
 	)
@@ -103,6 +108,7 @@ func main() {
 	raygui.LoadGuiStyle("zahnrad.style")
 
 	topMargin := 350
+	iconScale := float32(0.3)
 
 	for i := startOctave; i <= lastOctave; i++ {
 		// TODO: set duration to 0 and update it based on hold duration
@@ -234,6 +240,22 @@ func main() {
 
 		// Rendering settings
 		generatorIndex = raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 30), generators, generatorIndex)
+		rl.DrawTextureEx(sinTexture, rl.NewVector2(
+			100*0+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
+			50+30+5,
+		), 0, float32(iconScale), rl.Red)
+		rl.DrawTextureEx(sawtoothTexture, rl.NewVector2(
+			100*1+3+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
+			50+30+5,
+		), 0, float32(iconScale), rl.Red)
+		rl.DrawTextureEx(squareTexture, rl.NewVector2(
+			100*2+3+50-(iconScale*float32(squareTexture.Width))/2+50,
+			50+30+5,
+		), 0, float32(iconScale), rl.Red)
+		rl.DrawTextureEx(triangleTexture, rl.NewVector2(
+			100*3+3+50-(iconScale*float32(triangleTexture.Width))/2+50,
+			50+30+5,
+		), 0, float32(iconScale), rl.Red)
 
 		// Rendering decorations
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
