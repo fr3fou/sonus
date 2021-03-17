@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"math"
-	"strconv"
 	"time"
 
 	"github.com/fr3fou/gusic/gusic"
@@ -12,13 +12,15 @@ import (
 
 type Key struct {
 	rl.Rectangle
+	Texture        rl.Texture2D
+	PressedTexture rl.Texture2D
 	gusic.Note
 	IsSemitone bool
 	IsActive   bool
 }
 
-func NewKey(note gusic.Note, isSemitone bool) Key {
-	return Key{Note: note, IsSemitone: isSemitone}
+func NewKey(note gusic.Note, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D) Key {
+	return Key{Note: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture}
 }
 
 func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
@@ -33,13 +35,10 @@ func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
 }
 
 func (k *Key) Draw() {
-	color := rl.White
-	if k.IsSemitone {
-		color = rl.Black
-	}
-	rl.DrawRectangleRec(k.Rectangle, color)
-	if k.IsActive {
-		rl.DrawRectangleRec(k.Rectangle, rl.NewColor(204, 67, 67, 128))
+	if !k.IsActive {
+		rl.DrawTexturePro(k.Texture, rl.NewRectangle(0, 0, float32(k.Texture.Width), float32(k.Texture.Height)), k.Rectangle, rl.NewVector2(0, 0), 0, rl.White)
+	} else {
+		rl.DrawTexturePro(k.PressedTexture, rl.NewRectangle(0, 0, float32(k.Texture.Width), float32(k.Texture.Height)), k.Rectangle, rl.NewVector2(0, 0), 0, rl.White)
 	}
 }
 
@@ -96,10 +95,16 @@ func main() {
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
+	whiteTexture := rl.LoadTexture("white.png")
+	blackTexture := rl.LoadTexture("black.png")
+	whitePressedTexture := rl.LoadTexture("white_pressed.png")
+	blackPressedTexture := rl.LoadTexture("black_pressed.png")
 	sinTexture := rl.LoadTexture("sin.png")
 	sawtoothTexture := rl.LoadTexture("sawtooth.png")
 	squareTexture := rl.LoadTexture("square.png")
 	triangleTexture := rl.LoadTexture("triangle.png")
+
+	fmt.Println(whiteTexture.Width, whiteTexture.Height)
 
 	adsr := gusic.NewLinearADSR(
 		gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
@@ -108,23 +113,22 @@ func main() {
 	raygui.LoadGuiStyle("zahnrad.style")
 
 	topMargin := 350
-	iconScale := float32(0.3)
 
 	for i := startOctave; i <= lastOctave; i++ {
 		// TODO: set duration to 0 and update it based on hold duration
 		_keys = append(_keys,
-			NewKey(gusic.C(i, quaver, volume), false),
-			NewKey(gusic.CS(i, quaver, volume), true),
-			NewKey(gusic.D(i, quaver, volume), false),
-			NewKey(gusic.DS(i, quaver, volume), true),
-			NewKey(gusic.E(i, quaver, volume), false),
-			NewKey(gusic.F(i, quaver, volume), false),
-			NewKey(gusic.FS(i, quaver, volume), true),
-			NewKey(gusic.G(i, quaver, volume), false),
-			NewKey(gusic.GS(i, quaver, volume), true),
-			NewKey(gusic.A(i, quaver, volume), false),
-			NewKey(gusic.AS(i, quaver, volume), true),
-			NewKey(gusic.B(i, quaver, volume), false),
+			NewKey(gusic.C(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.CS(i, quaver, volume), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.D(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.DS(i, quaver, volume), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.E(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.F(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.FS(i, quaver, volume), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.G(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.GS(i, quaver, volume), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.A(i, quaver, volume), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.AS(i, quaver, volume), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.B(i, quaver, volume), false, whiteTexture, whitePressedTexture),
 		)
 	}
 
@@ -239,30 +243,43 @@ func main() {
 		}
 
 		// Rendering settings
-		generatorIndex = raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 30), generators, generatorIndex)
-		rl.DrawTextureEx(sinTexture, rl.NewVector2(
-			100*0+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
-			50+30+5,
-		), 0, float32(iconScale), rl.Red)
-		rl.DrawTextureEx(sawtoothTexture, rl.NewVector2(
-			100*1+3+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
-			50+30+5,
-		), 0, float32(iconScale), rl.Red)
-		rl.DrawTextureEx(squareTexture, rl.NewVector2(
-			100*2+3+50-(iconScale*float32(squareTexture.Width))/2+50,
-			50+30+5,
-		), 0, float32(iconScale), rl.Red)
-		rl.DrawTextureEx(triangleTexture, rl.NewVector2(
-			100*3+3+50-(iconScale*float32(triangleTexture.Width))/2+50,
-			50+30+5,
-		), 0, float32(iconScale), rl.Red)
+		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, whiteTexture)
+		adsr = gusic.NewLinearADSR(
+			adsrInput(adsr.Ratios()),
+			1.35, 0.35,
+		)
 
 		// Rendering decorations
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
+		rl.DrawText("Goda", int32(width-rl.MeasureText("Goda", 50)-50), int32(50), 50, rl.White)
 		rl.EndDrawing()
 	}
 
 	rl.CloseWindow()
+}
+
+func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture rl.Texture2D, generatorIndex int, generators []string, whiteKeyTexture rl.Texture2D) int {
+	iconScale := float32(0.5)
+	rl.DrawTextureEx(sinTexture, rl.NewVector2(
+		100*0+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
+		50+50+5,
+	), 0, float32(iconScale), rl.Red)
+	rl.DrawTextureEx(sawtoothTexture, rl.NewVector2(
+		100*1+3+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
+		50+50+5,
+	), 0, float32(iconScale), rl.Red)
+	rl.DrawTextureEx(squareTexture, rl.NewVector2(
+		100*2+3+50-(iconScale*float32(squareTexture.Width))/2+50,
+		50+50+5,
+	), 0, float32(iconScale), rl.Red)
+	rl.DrawTextureEx(triangleTexture, rl.NewVector2(
+		100*3+3+50-(iconScale*float32(triangleTexture.Width))/2+50,
+		50+50+5,
+	), 0, float32(iconScale), rl.Red)
+	return raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 50), generators, generatorIndex)
+}
+func adsrInput(ratios gusic.ADSRRatios) gusic.ADSRRatios {
+	return ratios
 }
 
 func samplesToFloat32(in []float64) []float32 {
@@ -271,23 +288,4 @@ func samplesToFloat32(in []float64) []float32 {
 		samples[i] = float32(v)
 	}
 	return samples
-}
-
-const twelfthrootof2 float64 = 1.059463094359
-
-var (
-	a4 = 440
-	// https://github.com/fr3fou/gusic/blob/72a7e32d5644ed6d123e365d416fdca51a268161/gusic/step.go#L38
-	// c0    = float64(a4) * math.Pow(twelfthrootof2, float64(-4*12-9))
-	c0    = float64(a4) * math.Pow(2, -4.75)
-	notes = []string{
-		"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
-	}
-)
-
-func note(freq float64) string {
-	h := int(math.Round(12 * math.Log2(freq/c0)))
-	octave := h / 12
-
-	return notes[h%12] + strconv.Itoa(octave)
 }

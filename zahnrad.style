@@ -1,7 +1,7 @@
 GLOBAL_BASE_COLOR                       0xf5f5f5ff
 GLOBAL_BORDER_COLOR                     0xf5f5f5ff
 GLOBAL_TEXT_COLOR                       0xf5f5f5ff
-GLOBAL_TEXT_FONTSIZE                    0xa
+GLOBAL_TEXT_FONTSIZE                    0xb
 GLOBAL_BORDER_WIDTH                     0x1
 BACKGROUND_COLOR                        0x2d2d2dff
 LABEL_BORDER_WIDTH                      0x2
