@@ -11,6 +11,9 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
 - [x] Configurable generators
 - [ ] Configurable ADSR
 - [ ] Note duration based on hold duration
+- [ ] Fix clipping
+- [ ] Support for continuous notes (no gap between individual notes)
+- [ ] Support for singular notes
 - [x] Better piano keys
 - [ ] MIDI Input
 - [ ] Octave labels
