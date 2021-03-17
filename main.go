@@ -168,6 +168,7 @@ func main() {
 	}
 
 	rl.SetTargetFPS(60)
+	iconScale := float32(0.5)
 
 	for !rl.WindowShouldClose() {
 		if rl.IsAudioStreamProcessed(stream) {
@@ -238,8 +239,13 @@ func main() {
 		}
 
 		// Rendering settings
-		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, whiteTexture)
+		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, iconScale)
 		adsr = gusic.NewIdentityADSR()
+
+		// Rendering soundwave
+		for i := 0; i < 4*100+4*3; i++ {
+			rl.DrawPixelV(rl.NewVector2(float32(50+i), 50+50+3+float32(float32(sinTexture.Height)*iconScale)+50+100*data[i]), rl.Red)
+		}
 
 		// Rendering decorations
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
@@ -250,8 +256,7 @@ func main() {
 	rl.CloseWindow()
 }
 
-func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture rl.Texture2D, generatorIndex int, generators []string, whiteKeyTexture rl.Texture2D) int {
-	iconScale := float32(0.5)
+func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture rl.Texture2D, generatorIndex int, generators []string, iconScale float32) int {
 	rl.DrawTextureEx(sinTexture, rl.NewVector2(
 		100*0+50-(iconScale*float32(sawtoothTexture.Width))/2+50,
 		50+50+5,
