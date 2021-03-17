@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/fr3fou/gusic/gusic"
+	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -20,15 +21,13 @@ func NewKey(note gusic.Note, isSemitone bool) Key {
 	return Key{Note: note, IsSemitone: isSemitone}
 }
 
-func (k *Key) Samples() []float32 {
+func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
 	return samplesToFloat32(
 		k.Note.Samples(
 			// TODO, configurable params
 			48000,
-			gusic.Sawtooth(math.Pi),
-			gusic.NewLinearADSR(
-				gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
-			),
+			generator,
+			adsr,
 		),
 	)
 }
@@ -87,6 +86,19 @@ func main() {
 
 	whiteWidth := int(width / (int32(octaveCount) * 7)) // 7 is white keys per octave
 	blackWidth := int(0.75 * float64(whiteWidth))
+
+	generatorMap := map[string]gusic.Generator{
+		"Sin":      math.Sin,
+		"Sawtooth": gusic.Sawtooth(math.Pi),
+		"Square":   gusic.Square(math.Pi),
+		"Triangle": gusic.Triangle(math.Pi),
+	}
+	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
+	generatorIndex := 0
+
+	adsr := gusic.NewLinearADSR(
+		gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.35, 0.35,
+	)
 
 	topMargin := 350
 
@@ -169,12 +181,13 @@ func main() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
 
+		// Handling presses
 		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 			hasFound := false
 
 			for i, key := range blackKeys {
 				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
-					samples := key.Samples()
+					samples := key.Samples(generatorMap[generators[generatorIndex]], adsr)
 					copy(data, samples)
 					totalSamples = int32(len(samples))
 					samplesLeft = totalSamples
@@ -187,7 +200,7 @@ func main() {
 
 			for i, key := range whiteKeys {
 				if !hasFound && rl.CheckCollisionPointRec(pos, key.Rectangle) {
-					samples := key.Samples()
+					samples := key.Samples(generatorMap[generators[generatorIndex]], adsr)
 					copy(data, samples)
 					totalSamples = int32(len(samples))
 					samplesLeft = totalSamples
@@ -206,15 +219,21 @@ func main() {
 			}
 		}
 
+		// Rendering white keys
 		for i, key := range whiteKeys {
 			key.Draw()
 			rl.DrawRectangle(int32(i*whiteWidth), int32(topMargin), 1, height-int32(topMargin), rl.Gray)
 		}
 
+		// Rendering black keys
 		for _, key := range blackKeys {
 			key.Draw()
 		}
 
+		// Rendering settings
+		generatorIndex = raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 30), generators, generatorIndex)
+
+		// Rendering decorations
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
 		rl.EndDrawing()
 	}
