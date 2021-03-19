@@ -15,6 +15,7 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
 - [ ] Support for continuous notes (no gap between individual notes)
 - [ ] Support for singular notes
 - [x] Better piano keys
+- [ ] Reverb
 - [ ] MIDI Input
 - [ ] Octave labels
 - [ ] Octave changer

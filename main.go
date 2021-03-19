@@ -113,7 +113,6 @@ func main() {
 
 	for i := startOctave; i <= lastOctave; i++ {
 		// TODO: set duration to 0 and update it based on hold duration
-
 		_keys = append(_keys,
 			NewKey(gusic.C(i, quaver, 0), false, whiteTexture, whitePressedTexture),
 			NewKey(gusic.CS(i, quaver, 0), true, blackTexture, blackPressedTexture),
