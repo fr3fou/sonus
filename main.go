@@ -220,14 +220,14 @@ func main() {
 				whiteKeys[i].IsActive = false
 			}
 		} else {
-			for i := range whiteKeys {
-				whiteKeys[i].IsActive = false
-				whiteKeys[i].SingleNote.Volume = float64(volume)
-			}
-
 			for i := range blackKeys {
 				blackKeys[i].IsActive = false
 				blackKeys[i].SingleNote.Volume = float64(volume)
+			}
+
+			for i := range whiteKeys {
+				whiteKeys[i].IsActive = false
+				whiteKeys[i].SingleNote.Volume = float64(volume)
 			}
 		}
 
