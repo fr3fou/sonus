@@ -25,17 +25,6 @@ func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, presse
 	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture}
 }
 
-// func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
-// return samplesToFloat32(
-// 	k.SingleNote.Samples(
-// 		// TODO, configurable params
-// 		sampleRate,
-// 		generator,
-// 		adsr,
-// 	),
-// )
-// }
-
 func (k *Key) Draw() {
 	if !k.IsActive {
 		rl.DrawTexturePro(k.Texture, rl.NewRectangle(0, 0, float32(k.Texture.Width), float32(k.Texture.Height)), k.Rectangle, rl.NewVector2(0, 0), 0, rl.White)

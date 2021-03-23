@@ -24,3 +24,4 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
 
 - <https://blogs.arubanetworks.com/industries/frequency-cycle-wavelength-amplitude-and-phase/>
 - <https://dsp.stackexchange.com/questions/13221/what-does-the-term-phase-actually-mean>
+- <https://zipcpu.com/dsp/2017/12/09/nco.html>
