@@ -6,5 +6,7 @@ github.com/fr3fou/gusic v0.0.0-20210317173744-6bf7bbf1dc27 h1:1pwMN8EwbV52XNCLly
 github.com/fr3fou/gusic v0.0.0-20210317173744-6bf7bbf1dc27/go.mod h1:Q01QY/5NdB77bHp4MTJ6mfLhI9QOjeudjz31mUbJxVg=
 github.com/fr3fou/gusic v0.0.0-20210317174247-e8c8ac76145d h1:H2WjlN6a8IXHP7cmxxLA/fKAifSf/detMWaiRL1IlR8=
 github.com/fr3fou/gusic v0.0.0-20210317174247-e8c8ac76145d/go.mod h1:Q01QY/5NdB77bHp4MTJ6mfLhI9QOjeudjz31mUbJxVg=
+github.com/fr3fou/gusic v0.0.0-20210323193726-719ef8860a9f h1:SRZFYdvOTkfYhNf5QYo1Z+mitnJJrXNTfb3TSOOzkPY=
+github.com/fr3fou/gusic v0.0.0-20210323193726-719ef8860a9f/go.mod h1:VMf+1UN8CUUhpZICqFWycRxHRtaAfhKgyRDsl/SxIWA=
 github.com/gen2brain/raylib-go v0.0.0-20210227124741-9d258bad6516 h1:vm9imS9/veDqkgl/MEDX35jywHzLwUrS/XDXsiKnpPI=
 github.com/gen2brain/raylib-go v0.0.0-20210227124741-9d258bad6516/go.mod h1:LUVRDQbnxUaOgzLzW5lMS+IcbqlXHIqIA9wq8wxzmcA=
