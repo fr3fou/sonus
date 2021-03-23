@@ -69,8 +69,8 @@ func main() {
 	_keys := []Key{}
 	whiteKeys := []Key{}
 	blackKeys := []Key{}
-	startOctave := 2
-	lastOctave := 5
+	startOctave := 1
+	lastOctave := 4
 	octaveCount := lastOctave - startOctave + 1 // +1 because it's inclusive
 
 	whiteWidth := int(width / (int32(octaveCount) * 7)) // 7 is white keys per octave
