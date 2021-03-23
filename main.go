@@ -2,7 +2,6 @@ package main
 
 import (
 	"math"
-	"time"
 
 	"github.com/fr3fou/gusic/gusic"
 	"github.com/gen2brain/raylib-go/raygui"
@@ -10,7 +9,7 @@ import (
 )
 
 const (
-	topMargin = 350
+	topMargin = 671
 )
 
 type Key struct {
@@ -26,16 +25,16 @@ func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, presse
 	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture}
 }
 
-func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
-	return samplesToFloat32(
-		k.SingleNote.Samples(
-			// TODO, configurable params
-			48000,
-			generator,
-			adsr,
-		),
-	)
-}
+// func (k *Key) Samples(generator gusic.Generator, adsr gusic.ADSR) []float32 {
+// return samplesToFloat32(
+// 	k.SingleNote.Samples(
+// 		// TODO, configurable params
+// 		sampleRate,
+// 		generator,
+// 		adsr,
+// 	),
+// )
+// }
 
 func (k *Key) Draw() {
 	if !k.IsActive {
@@ -45,44 +44,32 @@ func (k *Key) Draw() {
 	}
 }
 
+const (
+	sampleRate   = 48000
+	streamBuffer = 4096
+)
+
 func main() {
-	width := int32(1680)
-	height := int32(900)
+	width := int32(896)
+	height := int32(896)
 	rl.InitWindow(width, height, "goda - a simple music synth")
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
 
-	stream := rl.InitAudioStream(48000, 32, 1)
+	stream := rl.InitAudioStream(sampleRate, 32, 1)
 	defer rl.CloseAudioStream(stream)
 
-	maxSamples := 48000 * 5
-	maxSamplesPerUpdate := int32(4096)
-
-	data := make([]float32, maxSamples)
+	data := make([]float32, streamBuffer)
 
 	rl.PlayAudioStream(stream)
-
-	totalSamples := int32(0)
-	samplesLeft := int32(totalSamples)
-
-	bpm := 200
-	noteLength := 4
-
-	breve := time.Minute / gusic.NoteDuration(bpm) * gusic.NoteDuration(noteLength) * 2
-	semibreve := breve / 2
-	// minim := semibreve / 2
-	// crotchet := semibreve / 4
-	quaver := semibreve / 8
-	// semiquaver := semibreve / 16
-	// demisemiquaver := semibreve / 32
 
 	volume := float32(0.125)
 
 	_keys := []Key{}
 	whiteKeys := []Key{}
 	blackKeys := []Key{}
-	startOctave := 3
+	startOctave := 2
 	lastOctave := 5
 	octaveCount := lastOctave - startOctave + 1 // +1 because it's inclusive
 
@@ -92,13 +79,13 @@ func main() {
 	generatorMap := map[string]gusic.Generator{
 		"Sin":      math.Sin,
 		"Sawtooth": gusic.Sawtooth(2 * math.Pi),
-		"Square":   gusic.Square(2 * math.Pi),
+		"Square":   gusic.Square(1),
 		"Triangle": gusic.Triangle(2 * math.Pi),
 	}
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
-	adsr := gusic.NewIdentityADSR()
+	// adsr := gusic.NewIdentityADSR()
 
 	whiteTexture := rl.LoadTexture("white.png")
 	blackTexture := rl.LoadTexture("black.png")
@@ -112,20 +99,19 @@ func main() {
 	raygui.LoadGuiStyle("zahnrad.style")
 
 	for i := startOctave; i <= lastOctave; i++ {
-		// TODO: set duration to 0 and update it based on hold duration
 		_keys = append(_keys,
-			NewKey(gusic.C(i, quaver, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.CS(i, quaver, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.D(i, quaver, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.DS(i, quaver, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.E(i, quaver, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.F(i, quaver, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.FS(i, quaver, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.G(i, quaver, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.GS(i, quaver, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.A(i, quaver, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.AS(i, quaver, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.B(i, quaver, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.C(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.CS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.D(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.DS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.E(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.F(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.FS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.G(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.GS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.A(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.AS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
+			NewKey(gusic.B(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
 		)
 	}
 
@@ -174,16 +160,30 @@ func main() {
 
 	for !rl.WindowShouldClose() {
 		if rl.IsAudioStreamProcessed(stream) {
-			numSamples := int32(0)
-			if samplesLeft >= maxSamplesPerUpdate {
-				numSamples = maxSamplesPerUpdate
-			} else {
-				numSamples = samplesLeft
+			zeroSamples(data)
+			for _, k := range blackKeys {
+				if k.IsActive {
+					for i := 0; i < streamBuffer; i++ {
+						phi := (k.Frequency / sampleRate)
+						t := 2.0 * math.Pi * float64(i) * (phi - math.Floor(phi))
+						data[i] += float32(k.SampleAt(t, sampleRate, generatorMap[generators[generatorIndex]]))
+					}
+				}
 			}
+			for _, k := range whiteKeys {
+				if k.IsActive {
+					for i := 0; i < streamBuffer; i++ {
+						phi := (k.Frequency / sampleRate)
+						t := 2.0 * math.Pi * float64(i) * (phi - math.Floor(phi))
+						data[i] += float32(k.SampleAt(t, sampleRate, generatorMap[generators[generatorIndex]]))
+					}
+				}
+			}
+			c := float32toFloat64(data)
+			gusic.ApplyADSR(c, gusic.NewIdentityADSR())
+			data = float64toFloat32(c)
+			rl.UpdateAudioStream(stream, data, streamBuffer)
 
-			rl.UpdateAudioStream(stream, data[totalSamples-samplesLeft:], numSamples)
-
-			samplesLeft -= numSamples
 		}
 
 		pos := rl.GetMousePosition()
@@ -197,10 +197,6 @@ func main() {
 
 			for i, key := range blackKeys {
 				if rl.CheckCollisionPointRec(pos, key.Rectangle) {
-					samples := key.Samples(generatorMap[generators[generatorIndex]], adsr)
-					copy(data, samples)
-					totalSamples = int32(len(samples))
-					samplesLeft = totalSamples
 					hasFound = true
 					blackKeys[i].IsActive = true
 					continue
@@ -210,10 +206,6 @@ func main() {
 
 			for i, key := range whiteKeys {
 				if !hasFound && rl.CheckCollisionPointRec(pos, key.Rectangle) {
-					samples := key.Samples(generatorMap[generators[generatorIndex]], adsr)
-					copy(data, samples)
-					totalSamples = int32(len(samples))
-					samplesLeft = totalSamples
 					whiteKeys[i].IsActive = true
 					continue
 				}
@@ -244,7 +236,7 @@ func main() {
 
 		// Rendering settings
 		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, iconScale)
-		adsr = gusic.NewIdentityADSR()
+		// adsr = gusic.NewIdentityADSR()
 		volume = volumeInput(volume)
 
 		// Rendering soundwave
@@ -289,10 +281,24 @@ func volumeInput(volume float32) float32 {
 	return raygui.SliderBar(rl.NewRectangle(50, topMargin-75, 4*100+4*3, 25), volume, 0, 0.3)
 }
 
-func samplesToFloat32(in []float64) []float32 {
+func zeroSamples(data []float32) {
+	for i := range data {
+		data[i] = 0.0
+	}
+}
+
+func float64toFloat32(in []float64) []float32 {
 	samples := make([]float32, len(in))
 	for i, v := range in {
 		samples[i] = float32(v)
+	}
+	return samples
+}
+
+func float32toFloat64(in []float32) []float64 {
+	samples := make([]float64, len(in))
+	for i, v := range in {
+		samples[i] = float64(v)
 	}
 	return samples
 }

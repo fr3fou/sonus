@@ -19,3 +19,8 @@ A simple synth music app using <https://github.com/fr3fou/gusic>
 - [ ] MIDI Input
 - [ ] Octave labels
 - [ ] Octave changer
+
+## References
+
+- <https://blogs.arubanetworks.com/industries/frequency-cycle-wavelength-amplitude-and-phase/>
+- <https://dsp.stackexchange.com/questions/13221/what-does-the-term-phase-actually-mean>
