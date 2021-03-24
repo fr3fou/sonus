@@ -22,7 +22,12 @@ type Key struct {
 }
 
 func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D) Key {
-	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture}
+	return Key{
+		SingleNote:     note,
+		IsSemitone:     isSemitone,
+		Texture:        texture,
+		PressedTexture: pressedTexture,
+	}
 }
 
 func (k *Key) Draw() {
