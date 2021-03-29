@@ -1,8 +1,7 @@
 # sonus
 
-STILL WIP
+![image](https://user-images.githubusercontent.com/1344906/112873859-dcf88480-90ca-11eb-8311-cd8c5f09cd1a.png)
 
-![image](https://user-images.githubusercontent.com/1344906/112872698-5a22fa00-90c9-11eb-9cb0-085c2b4ecb03.png)
 
 A simple synth music app using <https://github.com/fr3fou/beep>
 
