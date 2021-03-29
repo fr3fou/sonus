@@ -17,17 +17,13 @@ type Key struct {
 	Texture        rl.Texture2D
 	PressedTexture rl.Texture2D
 	gusic.SingleNote
-	IsSemitone bool
-	IsActive   bool
+	KeyboardKey int
+	IsSemitone  bool
+	IsActive    bool
 }
 
-func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D) Key {
-	return Key{
-		SingleNote:     note,
-		IsSemitone:     isSemitone,
-		Texture:        texture,
-		PressedTexture: pressedTexture,
-	}
+func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D, keyboardKey int) Key {
+	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture, KeyboardKey: keyboardKey}
 }
 
 func (k *Key) Draw() {
@@ -79,7 +75,7 @@ func main() {
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
-	adsr := gusic.NewIdentityADSR()
+	adsr := gusic.NewEasedADSR(func(t float64) float64 { return t * t }, gusic.NewRatios(0.25, 0.25, 0.25, 0.25), 1.25, 0.25)
 
 	whiteTexture := rl.LoadTexture("white.png")
 	blackTexture := rl.LoadTexture("black.png")
@@ -91,22 +87,53 @@ func main() {
 	triangleTexture := rl.LoadTexture("triangle.png")
 
 	raygui.LoadGuiStyle("zahnrad.style")
-
 	for i := startOctave; i <= lastOctave; i++ {
 		_keys = append(_keys,
-			NewKey(gusic.C(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.CS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.D(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.DS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.E(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.F(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.FS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.G(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.GS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.A(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
-			NewKey(gusic.AS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture),
-			NewKey(gusic.B(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture),
+			NewKey(gusic.C(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(gusic.CS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(gusic.D(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(gusic.DS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(gusic.E(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(gusic.F(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(gusic.FS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(gusic.G(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(gusic.GS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(gusic.A(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(gusic.AS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(gusic.B(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 		)
+	}
+	keyboardKeys := []int{
+		// ---
+		rl.KeyA,
+		rl.KeyW,
+		rl.KeyS,
+		rl.KeyE,
+		rl.KeyD,
+		rl.KeyF,
+		rl.KeyT,
+		rl.KeyG,
+		rl.KeyY,
+		rl.KeyH,
+		rl.KeyU,
+		rl.KeyJ,
+		// ---
+		rl.KeyK,
+		rl.KeyO,
+		rl.KeyL,
+		rl.KeyP,
+		rl.KeySemicolon,
+		rl.KeyApostrophe,
+		rl.KeyRightBracket,
+		rl.KeyBackSlash,
+		-1,
+		-1,
+		-1,
+		-1,
+	}
+
+	for i := 0; i < 12*2; i++ { // loop for 2 octaves
+		_keys[i+12].KeyboardKey = keyboardKeys[i]
 	}
 
 	for _, key := range _keys {
@@ -221,6 +248,22 @@ func main() {
 				whiteKeys[i].IsActive = false
 				whiteKeys[i].SingleNote.Volume = float64(volume)
 			}
+		}
+
+		for i, key := range whiteKeys {
+			if rl.IsKeyDown(int32(key.KeyboardKey)) {
+				whiteKeys[i].IsActive = true
+				continue
+			}
+			// whiteKeys[i].IsActive = false
+		}
+
+		for i, key := range blackKeys {
+			if rl.IsKeyDown(int32(key.KeyboardKey)) {
+				blackKeys[i].IsActive = true
+				continue
+			}
+			// blackKeys[i].IsActive = false
 		}
 
 		// Rendering white keys
