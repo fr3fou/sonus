@@ -77,16 +77,16 @@ func main() {
 
 	adsr := beep.NewEasedADSR(func(t float64) float64 { return t * t }, beep.NewRatios(0.25, 0.25, 0.25, 0.25), 1.25, 0.25)
 
-	whiteTexture := rl.LoadTexture("white.png")
-	blackTexture := rl.LoadTexture("black.png")
-	whitePressedTexture := rl.LoadTexture("white_pressed.png")
-	blackPressedTexture := rl.LoadTexture("black_pressed.png")
-	sinTexture := rl.LoadTexture("sin.png")
-	sawtoothTexture := rl.LoadTexture("sawtooth.png")
-	squareTexture := rl.LoadTexture("square.png")
-	triangleTexture := rl.LoadTexture("triangle.png")
+	whiteTexture := rl.LoadTexture("assets/white.png")
+	blackTexture := rl.LoadTexture("assets/black.png")
+	whitePressedTexture := rl.LoadTexture("assets/white_pressed.png")
+	blackPressedTexture := rl.LoadTexture("assets/black_pressed.png")
+	sinTexture := rl.LoadTexture("assets/sin.png")
+	sawtoothTexture := rl.LoadTexture("assets/sawtooth.png")
+	squareTexture := rl.LoadTexture("assets/square.png")
+	triangleTexture := rl.LoadTexture("assets/triangle.png")
 
-	raygui.LoadGuiStyle("zahnrad.style")
+	raygui.LoadGuiStyle("assets/zahnrad.style")
 	for i := startOctave; i <= lastOctave; i++ {
 		_keys = append(_keys,
 			NewKey(beep.C(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
