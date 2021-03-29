@@ -42,7 +42,7 @@ const (
 func main() {
 	width := int32(896)
 	height := int32(896)
-	rl.InitWindow(width, height, "goda - a simple music synth")
+	rl.InitWindow(width, height, "sotus - a simple music synth")
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
@@ -296,7 +296,7 @@ func main() {
 
 		// Rendering decorations
 		rl.DrawLineEx(rl.NewVector2(0, float32(topMargin)), rl.NewVector2(float32(width), float32(topMargin)), 3, rl.Red)
-		rl.DrawText("Goda", int32(width-rl.MeasureText("Goda", 50)-50), int32(50), 50, rl.White)
+		rl.DrawText("sotus", int32(width-rl.MeasureText("sotus", 50)-50), int32(50), 50, rl.White)
 		rl.EndDrawing()
 	}
 

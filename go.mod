@@ -1,4 +1,4 @@
-module github.com/fr3fou/goda
+module github.com/fr3fou/sotus
 
 go 1.16
 
