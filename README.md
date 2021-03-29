@@ -2,7 +2,7 @@
 
 STILL WIP
 
-![image](https://user-images.githubusercontent.com/1344906/112218083-fc576380-8c2b-11eb-892c-7e1229611c06.png)
+![image](https://user-images.githubusercontent.com/1344906/112872698-5a22fa00-90c9-11eb-9cb0-085c2b4ecb03.png)
 
 A simple synth music app using <https://github.com/fr3fou/beep>
 
