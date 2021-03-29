@@ -1,4 +1,4 @@
-# sotus
+# sonus
 
 STILL WIP
 

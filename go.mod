@@ -1,4 +1,4 @@
-module github.com/fr3fou/sotus
+module github.com/fr3fou/sonus
 
 go 1.16
 
