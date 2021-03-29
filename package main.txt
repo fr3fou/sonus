@@ -3,7 +3,7 @@ package main
 import (
 	"math"
 
-	"github.com/fr3fou/go-raw-audio/go-raw-audio"
+	"github.com/fr3fou/beep/beep"
 	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -16,13 +16,13 @@ type Key struct {
 	rl.Rectangle
 	Texture        rl.Texture2D
 	PressedTexture rl.Texture2D
-	go-raw-audio.SingleNote
+	beep.SingleNote
 	KeyboardKey int
 	IsSemitone  bool
 	IsActive    bool
 }
 
-func NewKey(note go-raw-audio.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D, keyboardKey int) Key {
+func NewKey(note beep.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D, keyboardKey int) Key {
 	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture, KeyboardKey: keyboardKey}
 }
 
@@ -66,16 +66,16 @@ func main() {
 	whiteWidth := int(width / (int32(octaveCount) * 7)) // 7 is white keys per octave
 	blackWidth := int(0.75 * float64(whiteWidth))
 
-	generatorMap := map[string]go-raw-audio.Generator{
+	generatorMap := map[string]beep.Generator{
 		"Sin":      math.Sin,
-		"Sawtooth": go-raw-audio.Sawtooth(2 * math.Pi),
-		"Square":   go-raw-audio.Square(1),
-		"Triangle": go-raw-audio.Triangle(2 * math.Pi),
+		"Sawtooth": beep.Sawtooth(2 * math.Pi),
+		"Square":   beep.Square(1),
+		"Triangle": beep.Triangle(2 * math.Pi),
 	}
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
-	// adsr := go-raw-audio.NewIdentityADSR()
+	// adsr := beep.NewIdentityADSR()
 
 	whiteTexture := rl.LoadTexture("white.png")
 	blackTexture := rl.LoadTexture("black.png")
@@ -90,62 +90,62 @@ func main() {
 
 	for i := startOctave; i < startOctave+1; i++ {
 		_keys = append(_keys,
-			NewKey(go-raw-audio.C(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.CS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.D(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.DS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.E(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.F(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.FS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.G(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.GS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.A(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.AS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.B(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.C(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.CS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.D(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.DS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.E(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.F(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.FS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.G(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.GS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.A(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.AS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.B(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 		)
 	}
 	_keys = append(_keys,
-		NewKey(go-raw-audio.C(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyA),
-		NewKey(go-raw-audio.CS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyW),
-		NewKey(go-raw-audio.D(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyS),
-		NewKey(go-raw-audio.DS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyE),
-		NewKey(go-raw-audio.E(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyD),
-		NewKey(go-raw-audio.F(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyF),
-		NewKey(go-raw-audio.FS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyT),
-		NewKey(go-raw-audio.G(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyG),
-		NewKey(go-raw-audio.GS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyY),
-		NewKey(go-raw-audio.A(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyH),
-		NewKey(go-raw-audio.AS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyU),
-		NewKey(go-raw-audio.B(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyJ),
+		NewKey(beep.C(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyA),
+		NewKey(beep.CS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyW),
+		NewKey(beep.D(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyS),
+		NewKey(beep.DS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyE),
+		NewKey(beep.E(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyD),
+		NewKey(beep.F(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyF),
+		NewKey(beep.FS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyT),
+		NewKey(beep.G(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyG),
+		NewKey(beep.GS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyY),
+		NewKey(beep.A(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyH),
+		NewKey(beep.AS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyU),
+		NewKey(beep.B(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyJ),
 	)
 	_keys = append(_keys,
-		NewKey(go-raw-audio.C(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyK),
-		NewKey(go-raw-audio.CS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyO),
-		NewKey(go-raw-audio.D(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyL),
-		NewKey(go-raw-audio.DS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyP),
-		NewKey(go-raw-audio.E(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeySemicolon),
-		NewKey(go-raw-audio.F(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyApostrophe),
-		NewKey(go-raw-audio.FS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyRightBracket),
-		NewKey(go-raw-audio.G(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyBackSlash),
-		NewKey(go-raw-audio.GS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-		NewKey(go-raw-audio.A(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-		NewKey(go-raw-audio.AS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-		NewKey(go-raw-audio.B(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+		NewKey(beep.C(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyK),
+		NewKey(beep.CS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyO),
+		NewKey(beep.D(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyL),
+		NewKey(beep.DS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyP),
+		NewKey(beep.E(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeySemicolon),
+		NewKey(beep.F(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyApostrophe),
+		NewKey(beep.FS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyRightBracket),
+		NewKey(beep.G(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyBackSlash),
+		NewKey(beep.GS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+		NewKey(beep.A(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+		NewKey(beep.AS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+		NewKey(beep.B(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 	)
 	for i := startOctave + 3; i <= lastOctave; i++ {
 		_keys = append(_keys,
-			NewKey(go-raw-audio.C(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.CS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.D(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.DS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.E(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.F(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.FS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.G(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.GS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.A(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(go-raw-audio.AS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(go-raw-audio.B(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.C(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.CS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.D(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.DS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.E(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.F(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.FS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.G(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.GS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.A(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(beep.AS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(beep.B(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 		)
 	}
 
@@ -214,7 +214,7 @@ func main() {
 				}
 			}
 			c := float32toFloat64(data)
-			go-raw-audio.ApplyADSR(c, go-raw-audio.NewIdentityADSR())
+			beep.ApplyADSR(c, beep.NewIdentityADSR())
 			data = float64toFloat32(c)
 			rl.UpdateAudioStream(stream, data, streamBuffer)
 
@@ -286,7 +286,7 @@ func main() {
 
 		// Rendering settings
 		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, iconScale)
-		// adsr = go-raw-audio.NewIdentityADSR()
+		// adsr = beep.NewIdentityADSR()
 		volume = volumeInput(volume)
 
 		// Rendering soundwave
@@ -323,7 +323,7 @@ func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture 
 	return raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 50), generators, generatorIndex)
 }
 
-func adsrInput(ratios go-raw-audio.ADSRRatios) go-raw-audio.ADSRRatios {
+func adsrInput(ratios beep.ADSRRatios) beep.ADSRRatios {
 	return ratios
 }
 
