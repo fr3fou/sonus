@@ -37,11 +37,11 @@ func (k *Key) Draw() {
 const (
 	sampleRate   = 48000
 	streamBuffer = 4096
+	width        = int32(896)
+	height       = int32(896)
 )
 
 func main() {
-	width := int32(896)
-	height := int32(896)
 	rl.InitWindow(width, height, "sonus - a simple music synth")
 
 	rl.InitAudioDevice()
@@ -59,9 +59,12 @@ func main() {
 	_keys := []Key{}
 	whiteKeys := []Key{}
 	blackKeys := []Key{}
-	startOctave := 1
-	lastOctave := 4
+	startOctave := 3
+	lastOctave := 6
 	octaveCount := lastOctave - startOctave + 1 // +1 because it's inclusive
+	if octaveCount < 3 {
+		panic("not enough octaves, change startOctave and lastOctave vars")
+	}
 
 	whiteWidth := int(width / (int32(octaveCount) * 7)) // 7 is white keys per octave
 	blackWidth := int(0.75 * float64(whiteWidth))
@@ -74,21 +77,20 @@ func main() {
 	}
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
+	adsr := beep.NewEasedADSR(func(t float64) float64 { return t * t }, beep.NewRatios(0.25, 0.25, 0.25, 0.25), 1.25, 0.25)
+	isPoly := true
 
-	// adsr := beep.NewIdentityADSR()
+	whiteTexture := rl.LoadTexture("assets/white.png")
+	blackTexture := rl.LoadTexture("assets/black.png")
+	whitePressedTexture := rl.LoadTexture("assets/white_pressed.png")
+	blackPressedTexture := rl.LoadTexture("assets/black_pressed.png")
+	sinTexture := rl.LoadTexture("assets/sin.png")
+	sawtoothTexture := rl.LoadTexture("assets/sawtooth.png")
+	squareTexture := rl.LoadTexture("assets/square.png")
+	triangleTexture := rl.LoadTexture("assets/triangle.png")
 
-	whiteTexture := rl.LoadTexture("white.png")
-	blackTexture := rl.LoadTexture("black.png")
-	whitePressedTexture := rl.LoadTexture("white_pressed.png")
-	blackPressedTexture := rl.LoadTexture("black_pressed.png")
-	sinTexture := rl.LoadTexture("sin.png")
-	sawtoothTexture := rl.LoadTexture("sawtooth.png")
-	squareTexture := rl.LoadTexture("square.png")
-	triangleTexture := rl.LoadTexture("triangle.png")
-
-	raygui.LoadGuiStyle("zahnrad.style")
-
-	for i := startOctave; i < startOctave+1; i++ {
+	raygui.LoadGuiStyle("assets/zahnrad.style")
+	for i := startOctave; i <= lastOctave; i++ {
 		_keys = append(_keys,
 			NewKey(beep.C(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 			NewKey(beep.CS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
@@ -104,49 +106,37 @@ func main() {
 			NewKey(beep.B(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 		)
 	}
-	_keys = append(_keys,
-		NewKey(beep.C(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyA),
-		NewKey(beep.CS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyW),
-		NewKey(beep.D(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyS),
-		NewKey(beep.DS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyE),
-		NewKey(beep.E(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyD),
-		NewKey(beep.F(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyF),
-		NewKey(beep.FS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyT),
-		NewKey(beep.G(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyG),
-		NewKey(beep.GS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyY),
-		NewKey(beep.A(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyH),
-		NewKey(beep.AS(2, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyU),
-		NewKey(beep.B(2, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyJ),
-	)
-	_keys = append(_keys,
-		NewKey(beep.C(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyK),
-		NewKey(beep.CS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyO),
-		NewKey(beep.D(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyL),
-		NewKey(beep.DS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyP),
-		NewKey(beep.E(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeySemicolon),
-		NewKey(beep.F(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyApostrophe),
-		NewKey(beep.FS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyRightBracket),
-		NewKey(beep.G(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyBackSlash),
-		NewKey(beep.GS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-		NewKey(beep.A(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-		NewKey(beep.AS(3, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-		NewKey(beep.B(3, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-	)
-	for i := startOctave + 3; i <= lastOctave; i++ {
-		_keys = append(_keys,
-			NewKey(beep.C(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(beep.CS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(beep.D(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(beep.DS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(beep.E(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(beep.F(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(beep.FS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(beep.G(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(beep.GS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(beep.A(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(beep.AS(i, beep.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(beep.B(i, beep.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-		)
+	keyboardKeys := []int{
+		// ---
+		rl.KeyA,
+		rl.KeyW,
+		rl.KeyS,
+		rl.KeyE,
+		rl.KeyD,
+		rl.KeyF,
+		rl.KeyT,
+		rl.KeyG,
+		rl.KeyY,
+		rl.KeyH,
+		rl.KeyU,
+		rl.KeyJ,
+		// ---
+		rl.KeyK,
+		rl.KeyO,
+		rl.KeyL,
+		rl.KeyP,
+		rl.KeySemicolon,
+		rl.KeyApostrophe,
+		rl.KeyRightBracket,
+		rl.KeyBackSlash,
+		-1,
+		-1,
+		-1,
+		-1,
+	}
+
+	for i := 0; i < 12*2; i++ { // loop for 2 octaves
+		_keys[i+12].KeyboardKey = keyboardKeys[i]
 	}
 
 	for _, key := range _keys {
@@ -197,27 +187,33 @@ func main() {
 			zeroSamples(data)
 			for _, k := range blackKeys {
 				if k.IsActive {
+					samples := make([]float64, streamBuffer)
 					for i := 0; i < streamBuffer; i++ {
 						phi := (k.Frequency / sampleRate)
 						t := 2.0 * math.Pi * float64(i) * (phi - math.Floor(phi))
-						data[i] += float32(k.SampleAt(t, sampleRate, generatorMap[generators[generatorIndex]]))
+						samples[i] += k.SampleAt(t, sampleRate, generatorMap[generators[generatorIndex]])
+					}
+					beep.ApplyADSR(samples, adsr)
+					for i := range samples {
+						data[i] += float32(samples[i])
 					}
 				}
 			}
 			for _, k := range whiteKeys {
 				if k.IsActive {
+					samples := make([]float64, streamBuffer)
 					for i := 0; i < streamBuffer; i++ {
 						phi := (k.Frequency / sampleRate)
 						t := 2.0 * math.Pi * float64(i) * (phi - math.Floor(phi))
-						data[i] += float32(k.SampleAt(t, sampleRate, generatorMap[generators[generatorIndex]]))
+						samples[i] += k.SampleAt(t, sampleRate, generatorMap[generators[generatorIndex]])
+					}
+					beep.ApplyADSR(samples, adsr)
+					for i := range samples {
+						data[i] += float32(samples[i])
 					}
 				}
 			}
-			c := float32toFloat64(data)
-			beep.ApplyADSR(c, beep.NewIdentityADSR())
-			data = float64toFloat32(c)
 			rl.UpdateAudioStream(stream, data, streamBuffer)
-
 		}
 
 		pos := rl.GetMousePosition()
@@ -262,7 +258,6 @@ func main() {
 				whiteKeys[i].IsActive = true
 				continue
 			}
-			whiteKeys[i].IsActive = false
 		}
 
 		for i, key := range blackKeys {
@@ -270,7 +265,6 @@ func main() {
 				blackKeys[i].IsActive = true
 				continue
 			}
-			blackKeys[i].IsActive = false
 		}
 
 		// Rendering white keys
@@ -286,8 +280,9 @@ func main() {
 
 		// Rendering settings
 		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, iconScale)
-		// adsr = beep.NewIdentityADSR()
+		isPoly = polyInput(isPoly)
 		volume = volumeInput(volume)
+		// adsr = beep.NewIdentityADSR()
 
 		// Rendering soundwave
 		for i := 0; i < 4*100+4*3; i++ {
@@ -323,11 +318,24 @@ func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture 
 	return raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 50), generators, generatorIndex)
 }
 
+func polyInput(isPoly bool) bool {
+	str := "Monophonic"
+	if isPoly {
+		str = "Polyphonic"
+	}
+	rl.DrawText("Mode", width-50-100, topMargin-75-25-10, 20, rl.White)
+	if raygui.Button(rl.NewRectangle(float32(width-50)-100, topMargin-75-10, 100, 40), str) {
+		return !isPoly
+	}
+	return isPoly
+}
+
 func adsrInput(ratios beep.ADSRRatios) beep.ADSRRatios {
 	return ratios
 }
 
 func volumeInput(volume float32) float32 {
+	rl.DrawText("Volume", 50, topMargin-75-25, 20, rl.White)
 	return raygui.SliderBar(rl.NewRectangle(50, topMargin-75, 4*100+4*3, 25), volume, 0, 0.3)
 }
 
