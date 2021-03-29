@@ -4,7 +4,7 @@ STILL WIP
 
 ![image](https://user-images.githubusercontent.com/1344906/112218083-fc576380-8c2b-11eb-892c-7e1229611c06.png)
 
-A simple synth music app using <https://github.com/fr3fou/gusic>
+A simple synth music app using <https://github.com/fr3fou/go-raw-audio>
 
 - [x] Render multiple keys
 - [x] Support for pressing several keys at once / play more than 1 note at once

@@ -3,7 +3,7 @@ package main
 import (
 	"math"
 
-	"github.com/fr3fou/gusic/gusic"
+	"github.com/fr3fou/go-raw-audio/go-raw-audio"
 	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -16,13 +16,13 @@ type Key struct {
 	rl.Rectangle
 	Texture        rl.Texture2D
 	PressedTexture rl.Texture2D
-	gusic.SingleNote
+	go-raw-audio.SingleNote
 	KeyboardKey int
 	IsSemitone  bool
 	IsActive    bool
 }
 
-func NewKey(note gusic.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D, keyboardKey int) Key {
+func NewKey(note go-raw-audio.SingleNote, isSemitone bool, texture rl.Texture2D, pressedTexture rl.Texture2D, keyboardKey int) Key {
 	return Key{SingleNote: note, IsSemitone: isSemitone, Texture: texture, PressedTexture: pressedTexture, KeyboardKey: keyboardKey}
 }
 
@@ -66,16 +66,16 @@ func main() {
 	whiteWidth := int(width / (int32(octaveCount) * 7)) // 7 is white keys per octave
 	blackWidth := int(0.75 * float64(whiteWidth))
 
-	generatorMap := map[string]gusic.Generator{
+	generatorMap := map[string]go-raw-audio.Generator{
 		"Sin":      math.Sin,
-		"Sawtooth": gusic.Sawtooth(2 * math.Pi),
-		"Square":   gusic.Square(1),
-		"Triangle": gusic.Triangle(2 * math.Pi),
+		"Sawtooth": go-raw-audio.Sawtooth(2 * math.Pi),
+		"Square":   go-raw-audio.Square(1),
+		"Triangle": go-raw-audio.Triangle(2 * math.Pi),
 	}
 	generators := []string{"Sin", "Sawtooth", "Square", "Triangle"}
 	generatorIndex := 0
 
-	// adsr := gusic.NewIdentityADSR()
+	// adsr := go-raw-audio.NewIdentityADSR()
 
 	whiteTexture := rl.LoadTexture("white.png")
 	blackTexture := rl.LoadTexture("black.png")
@@ -90,62 +90,62 @@ func main() {
 
 	for i := startOctave; i < startOctave+1; i++ {
 		_keys = append(_keys,
-			NewKey(gusic.C(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.CS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.D(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.DS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.E(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.F(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.FS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.G(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.GS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.A(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.AS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.B(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.C(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.CS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.D(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.DS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.E(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.F(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.FS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.G(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.GS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.A(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.AS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.B(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 		)
 	}
 	_keys = append(_keys,
-		NewKey(gusic.C(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyA),
-		NewKey(gusic.CS(2, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyW),
-		NewKey(gusic.D(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyS),
-		NewKey(gusic.DS(2, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyE),
-		NewKey(gusic.E(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyD),
-		NewKey(gusic.F(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyF),
-		NewKey(gusic.FS(2, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyT),
-		NewKey(gusic.G(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyG),
-		NewKey(gusic.GS(2, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyY),
-		NewKey(gusic.A(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyH),
-		NewKey(gusic.AS(2, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyU),
-		NewKey(gusic.B(2, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyJ),
+		NewKey(go-raw-audio.C(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyA),
+		NewKey(go-raw-audio.CS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyW),
+		NewKey(go-raw-audio.D(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyS),
+		NewKey(go-raw-audio.DS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyE),
+		NewKey(go-raw-audio.E(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyD),
+		NewKey(go-raw-audio.F(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyF),
+		NewKey(go-raw-audio.FS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyT),
+		NewKey(go-raw-audio.G(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyG),
+		NewKey(go-raw-audio.GS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyY),
+		NewKey(go-raw-audio.A(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyH),
+		NewKey(go-raw-audio.AS(2, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyU),
+		NewKey(go-raw-audio.B(2, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyJ),
 	)
 	_keys = append(_keys,
-		NewKey(gusic.C(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyK),
-		NewKey(gusic.CS(3, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyO),
-		NewKey(gusic.D(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyL),
-		NewKey(gusic.DS(3, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyP),
-		NewKey(gusic.E(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeySemicolon),
-		NewKey(gusic.F(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyApostrophe),
-		NewKey(gusic.FS(3, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyRightBracket),
-		NewKey(gusic.G(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyBackSlash),
-		NewKey(gusic.GS(3, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-		NewKey(gusic.A(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-		NewKey(gusic.AS(3, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-		NewKey(gusic.B(3, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+		NewKey(go-raw-audio.C(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyK),
+		NewKey(go-raw-audio.CS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyO),
+		NewKey(go-raw-audio.D(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyL),
+		NewKey(go-raw-audio.DS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyP),
+		NewKey(go-raw-audio.E(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeySemicolon),
+		NewKey(go-raw-audio.F(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyApostrophe),
+		NewKey(go-raw-audio.FS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, rl.KeyRightBracket),
+		NewKey(go-raw-audio.G(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, rl.KeyBackSlash),
+		NewKey(go-raw-audio.GS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+		NewKey(go-raw-audio.A(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+		NewKey(go-raw-audio.AS(3, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+		NewKey(go-raw-audio.B(3, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 	)
 	for i := startOctave + 3; i <= lastOctave; i++ {
 		_keys = append(_keys,
-			NewKey(gusic.C(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.CS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.D(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.DS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.E(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.F(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.FS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.G(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.GS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.A(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
-			NewKey(gusic.AS(i, gusic.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
-			NewKey(gusic.B(i, gusic.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.C(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.CS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.D(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.DS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.E(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.F(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.FS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.G(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.GS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.A(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
+			NewKey(go-raw-audio.AS(i, go-raw-audio.NoDuration, 0), true, blackTexture, blackPressedTexture, -1),
+			NewKey(go-raw-audio.B(i, go-raw-audio.NoDuration, 0), false, whiteTexture, whitePressedTexture, -1),
 		)
 	}
 
@@ -214,7 +214,7 @@ func main() {
 				}
 			}
 			c := float32toFloat64(data)
-			gusic.ApplyADSR(c, gusic.NewIdentityADSR())
+			go-raw-audio.ApplyADSR(c, go-raw-audio.NewIdentityADSR())
 			data = float64toFloat32(c)
 			rl.UpdateAudioStream(stream, data, streamBuffer)
 
@@ -286,7 +286,7 @@ func main() {
 
 		// Rendering settings
 		generatorIndex = generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture, generatorIndex, generators, iconScale)
-		// adsr = gusic.NewIdentityADSR()
+		// adsr = go-raw-audio.NewIdentityADSR()
 		volume = volumeInput(volume)
 
 		// Rendering soundwave
@@ -323,7 +323,7 @@ func generatorInput(sinTexture, sawtoothTexture, squareTexture, triangleTexture 
 	return raygui.ToggleGroup(rl.NewRectangle(50, 50, 100, 50), generators, generatorIndex)
 }
 
-func adsrInput(ratios gusic.ADSRRatios) gusic.ADSRRatios {
+func adsrInput(ratios go-raw-audio.ADSRRatios) go-raw-audio.ADSRRatios {
 	return ratios
 }
 
